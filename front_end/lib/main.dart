@@ -3,13 +3,9 @@ import 'package:flutter/services.dart';
 import './screens/authenticate/wrapper.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-Future<void> find() async {
-  await dotenv.load(fileName: ".env");
-  
-}
 
-void main() {
-  find(); // Load .env file
+Future<void> main() async {
+  await dotenv.load(fileName: "lib/.env"); // Load .env file
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
