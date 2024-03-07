@@ -5,6 +5,8 @@ const bcrypt = require('bcrypt');
 var functions = {
 
     signup : async function(req, res) {
+        console.log("run")
+        console.log(req.body)
         var json = {
             email : req.body.email,
             password : req.body.password,
@@ -12,27 +14,27 @@ var functions = {
             lastName : req.body.lastName,
             username : req.body.username,
             displayName : req.body.displayName,
-            // birthday : req.body.birthday
+            birthday : req.body.birthday
         }
 
         const salt = await bcrypt.genSalt(10);
         var password = await bcrypt.hash(json.password, salt);
 
-        var sql =  `INSERT INTO my_street.User (email, firstName, lastName, displayName, username, avatar, password, birthday)
-        VALUES (
-           '${json.email}', 
-           '${json.firstName}', 
-           '${json.lastName}', 
-           '${json.displayName}', 
-           '${json.username}', 
-           '${defaultAvatar}', 
-           '${password}',
-           NULL -- Assuming birthday is optional
-        )
-        ON CONFLICT (email) DO UPDATE 
-          SET EXCLUDED.email = NULL -- Signals email conflict
-        ON CONFLICT (username) DO UPDATE
-          SET EXCLUDED.username = NULL -- Signals username conflict`;
+        var sql = `
+            INSERT INTO footprint.User (email, firstName, lastName, displayName, username, avatar, password, birthday)
+            VALUES (
+                '${json.email}', 
+                '${json.firstName}', 
+                '${json.lastName}', 
+                '${json.displayName}', 
+                '${json.username}', 
+                '${defaultAvatar}', 
+                '${password}',
+                ${json.birthday}
+            )
+            ON CONFLICT (email) DO UPDATE 
+                SET email = EXCLUDED.email 
+            `;
 
         // let storySql =  (userId) => `
         //     INSERT INTO my_street.Story (owner_id, type)
@@ -50,7 +52,7 @@ var functions = {
     },
 
     signin : async function (req, res) {
-        let sql = `SELECT * FROM my_street.User WHERE email = '${req.body.email}'`;
+        let sql = `SELECT * FROM footprint.User WHERE email = '${req.body.email}'`;
 
         sqlDB.query(sql, async function (err, result) {
 

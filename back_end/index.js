@@ -18,5 +18,5 @@ var ip = process.env.IP;
 var server = app.listen(port, ip, () => console.log(`running at host ${ip} on port ${port}`));
 
 
-    app.use(routes);
-    // socketFunc(server);
+app.use(routes);
+// socketFunc(server);

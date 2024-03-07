@@ -5,7 +5,6 @@ final url = dotenv.env['API_BASE_URL']!;
 class UserService {
 
   Future<http.Response> attemptSignUp({required String email, required String password, required String firstName, required String lastName, required String displayName, required String username, required DateTime birthday}) async {
-    print( birthday.toString());
     var res = await http.post(
         Uri.http(url, '/signup'),
         body: {
