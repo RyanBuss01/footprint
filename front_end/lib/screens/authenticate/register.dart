@@ -19,21 +19,19 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   late GlobalKey<FormState> formKey;
 
-  String? _displayName, _username, _email, _password, _firstName, _lastName, _verifyPassword;
-  DateTime? _birthday;
+  String? _displayName, _email, _password, _firstName, _lastName, _verifyPassword;
   String? _error, _birthdayError;
 
   bool loadingAuth = false;
 
   void registerUser() async {
+    print("run");
     var res = await UserService().attemptSignUp(
         email: _email!,
         password: _password!,
         firstName: _firstName!,
         lastName: _lastName!,
         displayName: _displayName!,
-        username: _username!,
-        birthday: _birthday!
     );
     if(res.statusCode == 200) {
       var json = jsonDecode(res.body);
@@ -95,17 +93,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                 textField('_firstName', 'First Name', false, _firstName),
                 textField('_lastName', 'Last Name', false, _lastName),
-                datePicker(),
-                Visibility(
-                  visible: _birthdayError != null,
-                  child: Center(child: Column(
-                    children: [
-                      Text(_birthdayError ?? '', style: const TextStyle(color: Colors.red),),
-                      SizedBox(height: 25,)
-                    ],
-                  )),
-                ),
-                textField('_username', 'Username', false, _username),
                 textField('_displayName', 'Display Name', false, _displayName),
                 textField('_email', 'Email', false, _email),
                 textField('_password', 'Password', true, _password),
@@ -137,46 +124,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
 
-
-  Widget datePicker() {
-    DateTime today = DateTime.now();
-
-    Future<void> _selectDate(BuildContext context) async {
-      final DateTime? picked = await showDatePicker(
-          context: context,
-          initialDate: today,
-          firstDate: DateTime(1900),
-          lastDate: DateTime(today.year, today.month, today.day));
-      if (picked != null && picked != _birthday) {
-        setState(() {
-          _birthday = picked;
-        });
-      }
-    }
-    return SizedBox(
-      height: 100,
-      child: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            const Text('Date of Birth: ', style: TextStyle(color: Colors.white, fontSize: 25),),
-            SizedBox(
-              height: 50,
-              width: 120,
-              child: ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(Colors.grey[700]!),
-                  side: _birthdayError != null ? MaterialStateProperty.all<BorderSide>(BorderSide(color: Colors.red)) : null
-                ),
-                onPressed: () => _selectDate(context),
-                child: Text(_birthday == null ? 'Select date' : '${_birthday!.month}/${_birthday!.day}/${_birthday!.year}'),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   Widget textField(String? val, String hintText, bool obscureText, String? initialValue) {
     return Padding(
@@ -254,7 +201,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
             if(val == '_firstName') _firstName = value.trim();
             if(val == '_lastName') _lastName = value.trim();
             if(val == '_displayName') _displayName = value.trim();
-            if(val == '_username') _username = value.trim();
             if(val == '_email') _email = value.trim();
             if(val == '_password') _password = value.trim();
             if(val == '_verifyPassword') _verifyPassword = value.trim();
@@ -280,28 +226,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     fontWeight: FontWeight.w700),)
             ),
             onTap: () {
-              if(_birthday == null) {
                 setState(() {
                   _birthdayError = 'enter birthdate';
                 });
-              } else {
-                setState(() {
-                  _birthdayError = null;
-                });
-              }
 
               if (formKey.currentState!.validate()) {
-                if (_birthday != null) {
                   setState(() {
                     loadingAuth = true;
                   });
                   registerUser();
-                }
               }
             },
           ),
         ),
-
       ),
     );
   }

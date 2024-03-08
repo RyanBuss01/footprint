@@ -21,34 +21,24 @@ var functions = {
         var password = await bcrypt.hash(json.password, salt);
 
         var sql = `
-            INSERT INTO footprint.User (email, firstName, lastName, displayName, username, avatar, password, birthday)
+            INSERT INTO footprint.User (email, firstName, lastName, displayName, avatar, password)
             VALUES (
                 '${json.email}', 
                 '${json.firstName}', 
                 '${json.lastName}', 
                 '${json.displayName}', 
-                '${json.username}', 
                 '${defaultAvatar}', 
-                '${password}',
-                ${json.birthday}
+                '${password}'
             )
-            ON CONFLICT (email) DO UPDATE 
-                SET email = EXCLUDED.email 
+            ON DUPLICATE KEY UPDATE 
+			email = Values(email); 
             `;
-
-        // let storySql =  (userId) => `
-        //     INSERT INTO my_street.Story (owner_id, type)
-        //     VALUES (${userId}, 'main')
-        //     `
-
-       
 
         sqlDB.query(sql, function(err, result) {
             if(err)  {res.status(400).send(), console.log(err)}
+            console.log(result)
             res.status(200).send({id : result.insertId})
-
-    //         sqlDB.query(storySql(result.insertId), function(err, result2) {})
-    })
+        })
     },
 
     signin : async function (req, res) {
