@@ -26,7 +26,7 @@ class _WrapperState extends State<Wrapper> {
         builder: (context, snap) {
           if(snap.connectionState == ConnectionState.done) {
             if (snap.data == '' || snap.data == null || snap.data == 'null') {
-              return Authenticate();
+              return const Authenticate();
             }
             else {
               return Frame(id: int.parse(snap.data.toString()));

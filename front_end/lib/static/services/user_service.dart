@@ -1,5 +1,11 @@
+import 'dart:convert';
+
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+import '../../classes/my_user.dart';
+import '../../screens/map/frame.dart';
 
 final url = dotenv.env['API_BASE_URL']!;
 class UserService {
@@ -15,7 +21,6 @@ class UserService {
           "displayName": displayName,
         }
     );
-
     return res;
   }
 
@@ -29,5 +34,20 @@ class UserService {
         }
     );
     return res;
+  }
+
+  Future<MyUser> getMyUserdata(int? id, {isMe = false, isProfilePage = false, String? username, required Position pos}) async {
+    var res = await http.get(
+        Uri.http(url, '/getUserdata'),
+        headers: {
+          'id': id.toString(),
+          'isme' : isMe.toString(),
+          'myId' : isMe ? '' :  user.id.toString(),
+          'username' : username ?? '',
+          'querytype' : username == null ? 'byId' : 'byUsername'
+        }
+    );
+    var json = await jsonDecode(res.body);
+    return MyUser.fromDoc(json, isMe: isMe, isProfilePage: isProfilePage, pos: pos);
   }
 }
