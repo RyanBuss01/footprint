@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:front_end/screens/map/map_screen.dart';
 import 'package:latlong2/latlong.dart' as latLng2;
 
@@ -11,18 +10,27 @@ class FogOfWarPainter extends CustomPainter {
 
     @override
     void paint(Canvas canvas, Size size) {
-        // Draw fog over the entire map
-        canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), Paint()..color = fogColor );
+        // Create a path that covers the entire map
+        Path path = Path()..addRect(Rect.fromLTWH(0, 0, size.width, size.height));
+
+        // Subtract the explored areas from the path
         for (var area in exploredAreas) {
             Offset screenCoords = coordinateConverter(area[0], area[1]);
             double radius = 20.0; // Adjust the radius as needed
-            canvas.drawCircle(screenCoords, radius, Paint()..blendMode = BlendMode.clear); 
+            path = Path.combine(
+                PathOperation.difference,
+                path,
+                Path()..addOval(Rect.fromCircle(center: screenCoords, radius: radius)),
+            );
         }
-      }
+
+        // Draw the fog, with holes where the explored areas are
+        canvas.drawPath(path, Paint()..color = fogColor);
+    }
 
     coordinateConverter(double latitude, double longitude) {
-      var point = mapController.camera.latLngToScreenPoint(latLng2.LatLng(latitude, longitude));
-      return Offset(point.x, point.y);
+        var point = mapController.camera.latLngToScreenPoint(latLng2.LatLng(latitude, longitude));
+        return Offset(point.x, point.y);
     }
 
     @override

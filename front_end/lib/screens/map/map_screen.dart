@@ -43,7 +43,7 @@ class _MapScreenState extends State<MapScreen> {
               child: SizedBox(
                 height: MediaQuery.of(context).size.height,
                 width: MediaQuery.of(context).size.width, // Top-left corner
-                child: CustomPaint(painter: FogOfWarPainter([[ 37.785834, -122.406417]])),
+                child: CustomPaint(painter: FogOfWarPainter([[ 37.785, -122.406], [ 37.786, -122.407], [ 37.785, -122.407], [ 37.786, -122.406]])),
               ),
             ),
           ]
@@ -77,7 +77,7 @@ class _MapScreenState extends State<MapScreen> {
               }
             });
 
-            final LatLngBounds startBounds = LatLngBounds(LatLng(user.currentPosition.latitude-0.05, user.currentPosition.longitude-0.03), LatLng(user.currentPosition.latitude+0.05, user.currentPosition.longitude+0.03));
+            // final LatLngBounds startBounds = LatLngBounds(LatLng(user.currentPosition.latitude-0.05, user.currentPosition.longitude-0.03), LatLng(user.currentPosition.latitude+0.05, user.currentPosition.longitude+0.03));
             // mapMoveEventListener(
             //   MapPosition(),
             //   isStatic: true,

@@ -6,11 +6,11 @@ import '../../screens/map/frame.dart';
 
 class GeoLocationService {
   static Future<Position?> getLocationPermission({bool update = false}) async {
-    bool serviceEnabled;
+    // bool serviceEnabled;
     LocationPermission permission;
 
    // Test if location services are enabled.
-serviceEnabled = await Geolocator.isLocationServiceEnabled();
+// serviceEnabled = await Geolocator.isLocationServiceEnabled();
 
 
 permission = await Geolocator.checkPermission();
