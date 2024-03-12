@@ -31,6 +31,7 @@ class _FrameState extends State<Frame> {
     await getCurrentPosition();
     await getUser();
     userdata!.currentPosition = _currentPosition!;
+    user = userdata!;
     return [userdata, _currentPosition];
   }
 
@@ -48,7 +49,6 @@ class _FrameState extends State<Frame> {
         future: futures,
         builder: (context, snap) {
         if(snap.connectionState == ConnectionState.done && userdata != null) {
-          user = userdata!;
           return MapScreen(isLaunch: true);
         }
         else if(snap.connectionState == ConnectionState.waiting) {

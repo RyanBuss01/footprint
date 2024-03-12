@@ -11,6 +11,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../static/constants/tile_layer_options.dart';
+import '../../static/services/geo_locator_service.dart';
 
 
 MapController mapController = MapController();
@@ -33,6 +34,18 @@ class _MapScreenState extends State<MapScreen> {
 
   late double latitudeOverlay;
   late double longitudeOverlay;
+
+  @override
+  void initState() {
+    super.initState();
+    // initStream();
+  }
+
+
+void initStream() {
+  GeoLocationService.initLocationStream(); // Ensure this is idempotent or safely handles being called multiple times
+}
+
   @override
   Widget build(BuildContext context) {
     return Stack(
