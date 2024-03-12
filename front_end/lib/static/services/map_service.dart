@@ -1,3 +1,8 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart' as latLng2;
+import '../../screens/map/map_screen.dart';
+
 class MapService {
   // This function will take in a latitude and longitude and 
   // return the coordinates related to fog grid
@@ -10,4 +15,10 @@ class MapService {
 
     return [latRoundedNumber, longRoundedNumber];
   }
+
+  static Offset coordinateConverter(double latitude, double longitude) {
+        var point = mapController.camera.latLngToScreenPoint(latLng2.LatLng(latitude, longitude));
+        return Offset(point.x, point.y);
+    }
+
 }

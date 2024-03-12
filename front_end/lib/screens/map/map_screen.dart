@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:front_end/classes/fog_of_war_painter.dart';
 import 'package:front_end/screens/map/frame.dart';
+import 'package:front_end/static/services/map_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -25,12 +26,10 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   LatLng startPosition = LatLng(user.currentPosition.latitude, user.currentPosition.longitude);
   late StreamSubscription<Position> positionStream;
-  late bool isMapCenter;
+  bool isMapCenter = true, isMapInitialized = false;
   late bool isWidgetBuilt = false;
   MapPosition? positionCamera;
   List<Marker> markers = [];
-  double zoom = 14;
-  Timer? timer;
 
   late double latitudeOverlay;
   late double longitudeOverlay;
@@ -39,13 +38,9 @@ class _MapScreenState extends State<MapScreen> {
     return Stack(
           children: [
             mapWidget(),
-            IgnorePointer(
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width, // Top-left corner
-                child: CustomPaint(painter: FogOfWarPainter([[ 37.785, -122.406], [ 37.786, -122.407], [ 37.785, -122.407], [ 37.786, -122.406]])),
-              ),
-            ),
+            fogLayer(),
+            centerButton(),
+            isMapInitialized? myIcon() : const SizedBox()
           ]
         );
   }
@@ -55,34 +50,29 @@ class _MapScreenState extends State<MapScreen> {
       key: ValueKey(MediaQuery.of(context).orientation),
       mapController: mapController,
       options: MapOptions(
+      
       interactionOptions: const InteractionOptions(flags: InteractiveFlag.pinchZoom | InteractiveFlag.drag),
           initialCenter: startPosition,
           initialZoom: 14.0,
           maxZoom: 18,
           minZoom: 4,
-          // swPanBoundary: LatLng(-80, -180), //Here is the issue
-          // nePanBoundary: LatLng(80, 180),
           onPositionChanged: (pos, bo) {
             positionCamera = pos;
             if( pos.center != startPosition) {
               setState(() {
                 isMapCenter = false;
-                zoom = pos.zoom!;
               });}
           },
           onMapReady: () {
-            mapController.mapEventStream.listen((MapEvent mapEvent) async {
-              if (mapEvent is MapEventMoveEnd) {
-                // await mapMoveEventListener(positionCamera!);
-              }
+            setState(() {
+            isMapInitialized = true;
             });
+            // mapController.mapEventStream.listen((MapEvent mapEvent) async {
+            //   if (mapEvent is MapEventMoveEnd) {
+            //     // await mapMoveEventListener(positionCamera!);
+            //   }
+            // });
 
-            // final LatLngBounds startBounds = LatLngBounds(LatLng(user.currentPosition.latitude-0.05, user.currentPosition.longitude-0.03), LatLng(user.currentPosition.latitude+0.05, user.currentPosition.longitude+0.03));
-            // mapMoveEventListener(
-            //   MapPosition(),
-            //   isStatic: true,
-            //   bounds: startBounds
-            // );
           },
       ),
       children: [
@@ -93,4 +83,49 @@ class _MapScreenState extends State<MapScreen> {
       ],
     );
   }
+
+  Widget fogLayer() {
+    return IgnorePointer(
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width, // Top-left corner
+                child: CustomPaint(painter: FogOfWarPainter([[ 37.785, -122.406], [ 37.786, -122.407], [ 37.785, -122.407], [ 37.786, -122.406]])),
+              ),
+            );
+  }
+
+  Widget centerButton() {
+    return Positioned(
+        bottom: 20,
+        right: 20,
+      child: AnimatedOpacity(
+        opacity: !isMapCenter ? 1.0 : 0.0, // Fully opaque when isVisible is true, otherwise fully transparent
+        duration: const Duration(milliseconds: 500), // Adjust the duration of the fade effect
+        child: FloatingActionButton(
+          onPressed: () {
+            mapController.move(startPosition, 14);
+            setState(() =>isMapCenter = true);
+          },
+          child: const Icon(Icons.gps_fixed),
+        ),
+      ),
+    );
+  }
+
+  Widget myIcon() {
+  Offset screenCoords = MapService.coordinateConverter(user.currentPosition.latitude, user.currentPosition.longitude);
+  return Positioned(
+    left: screenCoords.dx - 15,
+    top: screenCoords.dy - 15,
+    child: Container(
+      height: 30,
+      width: 30,
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.white, width: 5),
+        shape: BoxShape.circle,
+        color: Colors.blueAccent,
+      ),
+    ),
+  );
+}
 }

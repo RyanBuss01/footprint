@@ -10,7 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class RegisterScreen extends StatefulWidget {
   final GlobalKey<FormState> formKey;
   final ValueChanged<bool> signInCallback;
-  const RegisterScreen({Key? key, required this.formKey, required this.signInCallback}) : super(key: key);
+  const RegisterScreen({super.key, required this.formKey, required this.signInCallback});
 
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
