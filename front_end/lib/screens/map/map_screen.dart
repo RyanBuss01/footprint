@@ -31,6 +31,7 @@ class _MapScreenState extends State<MapScreen> {
   late bool isWidgetBuilt = false;
   MapPosition? positionCamera;
   List<Marker> markers = [];
+  Timer? timer;
 
   late double latitudeOverlay;
   late double longitudeOverlay;
@@ -38,12 +39,15 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void initState() {
     super.initState();
-    // initStream();
+    initStream();
   }
 
 
 void initStream() {
-  GeoLocationService.initLocationStream(); // Ensure this is idempotent or safely handles being called multiple times
+  // GeoLocationService.initLocationStream(); // Ensure this is idempotent or safely handles being called multiple times
+  timer = Timer.periodic(Duration(seconds: 30), (timer) {
+    GeoLocationService.updateFog();
+   });
 }
 
   @override
