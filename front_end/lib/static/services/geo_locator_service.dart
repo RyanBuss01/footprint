@@ -82,6 +82,8 @@ static Future<void> updateFog() async {
   
 }
 
+
+
   static Future updateServerLocation(Position position) async {
     var res = await http.post(
         Uri.http(url, '/updateUserLocation'),

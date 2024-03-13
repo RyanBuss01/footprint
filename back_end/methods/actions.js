@@ -119,6 +119,17 @@ var functions = {
     }
     },
 
+    getUserFog : async function (req, res) {
+        let sql = `
+        SELECT * FROM my_street.Fog WHERE user_id = ${req.headers.id}
+        `;
+
+        sqlDB.query(sql, function (err, result) {
+            if(err) {res.status(400).send(), console.log(err)}
+            res.status(200).send(result)
+        })
+    }
+
 }
 
 module.exports = functions;
